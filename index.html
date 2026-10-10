@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Veyil Kavasam: Heat Shield for Public Places</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#fff8ee;--cd:#fff;--tx:#2b2118;--mu:#7a6a5c;--ac:#d9480f;--bd:#ead9c3;--map:#f3ead9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17120e;--cd:#241c16;--tx:#f5ebe0;--mu:#b5a597;--bd:#3b3128;--map:#2d241c}}
+:root[data-theme="dark"]{--bg:#17120e;--cd:#241c16;--tx:#f5ebe0;--mu:#b5a597;--bd:#3b3128;--map:#2d241c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+main{max-width:900px;margin:0 auto;padding:18px 14px 40px}
+h1{margin:0;font-size:28px}h2{font-size:17px;margin:0 0 10px}
+.tag{color:var(--mu);margin:2px 0 14px}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+label.l{display:block;font-size:13px;color:var(--mu);margin-bottom:3px}
+select,button{font:inherit}
+select{width:100%;padding:8px;border-radius:8px;border:1px solid var(--bd);background:var(--cd);color:var(--tx)}
+input[type=range]{width:100%}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto}
+.tabs button{padding:8px 14px;border-radius:99px;border:1px solid var(--bd);background:var(--cd);color:var(--tx);cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.big{font-size:42px;font-weight:700;line-height:1.1}
+.pill{display:inline-block;padding:3px 12px;border-radius:99px;color:#fff;font-weight:600;font-size:14px;vertical-align:middle}
+.bars{display:flex;align-items:flex-end;gap:4px;height:160px;overflow-x:auto}
+.b{flex:1;min-width:26px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-size:11px;height:100%}
+.b div{width:100%;border-radius:4px 4px 0 0}
+.b.best div{outline:2px solid #2f9e44;outline-offset:1px}
+.hrs{display:flex;gap:4px;font-size:11px;color:var(--mu);overflow-x:auto}.hrs span{flex:1;min-width:26px;text-align:center}
+ul{margin:6px 0 0;padding-left:20px}
+.tip{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--bd);cursor:pointer}
+.tip:first-of-type{border-top:0}.tip small{color:var(--mu)}
+.ok{color:#2f9e44;font-weight:700}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chips label{font-size:13px;padding:4px 10px;border:1px solid var(--bd);border-radius:99px;cursor:pointer}
+.rb{padding:10px 14px;border-radius:10px;border:1px solid var(--bd);background:var(--cd);color:var(--tx);cursor:pointer;margin:0 6px 6px 0}
+.rb:hover{border-color:var(--ac)}
+svg{width:100%;height:auto;display:block;border-radius:10px;background:var(--map)}
+.hide{display:none}
+footer{color:var(--mu);font-size:12px;margin-top:18px}
+</style></head><body><main>
+<h1>🛡️ Veyil Kavasam</h1>
+<p class="tag">Heat shield for public places: eppo, enga, eppadi safe-aa poganum nu theriyum.</p>
+
+<div class="card"><div class="row">
+<div><label class="l">Place</label><select id="place"></select></div>
+<div><label class="l">Who is visiting?</label><select id="grp"><option value="0">General adult</option><option value="3">Elderly / pregnant</option><option value="3">Child</option><option value="2">Outdoor worker / vendor</option></select></div>
+<div><label class="l">Max temp: <b id="tv"></b>°C</label><input id="t" type="range" min="28" max="46" value="38"></div>
+<div><label class="l">Humidity: <b id="hv"></b>%</label><input id="h" type="range" min="20" max="95" value="55"></div>
+</div></div>
+
+<div class="tabs" id="tabs"><button data-t="plan" class="on">Plan visit</button><button data-t="map">Safe spots map</button><button data-t="own">Owner planner</button><button data-t="rep">Community</button><button data-t="why">Why &amp; impact</button></div>
+
+<section id="plan">
+<div class="card"><h2 id="pname"></h2><div class="big"><span id="hi"></span>°C <span class="pill" id="pill"></span></div><p id="adv" style="margin:6px 0 0"></p></div>
+<div class="card"><h2>Heat index by hour</h2><div class="bars" id="bars"></div><div class="hrs" id="hrs"></div><p id="best" style="margin:10px 0 0;font-weight:600"></p></div>
+<div class="card"><h2>Precautions</h2><ul id="pre"></ul></div>
+</section>
+
+<section id="map" class="hide"><div class="card"><h2>Shade, water, first-aid, rest spots</h2>
+<div class="chips" id="chips"></div><svg id="svg" viewBox="0 0 400 250"></svg>
+<p style="font-size:12px;color:var(--mu);margin:8px 0 0">Schematic demo map. Real version: OpenStreetMap + community-verified locations.</p></div></section>
+
+<section id="own" class="hide"><div class="card"><h2>Natural cooling planner for owners</h2>
+<div id="tips"></div>
+<p style="margin:10px 0 0">Estimated drop: <span class="ok" id="drop">0</span>°C · Cost approx ₹<span id="cost">0</span> · New risk: <span class="pill" id="npill"></span></p></div></section>
+
+<section id="rep" class="hide"><div class="card"><h2>Live community reports</h2>
+<p style="margin:0 0 8px;color:var(--mu)" id="rp"></p>
+<button class="rb" data-r="Romba veyil 🥵">Romba veyil 🥵</button><button class="rb" data-r="Water irukku 💧">Water irukku 💧</button><button class="rb" data-r="Shade irukku 🌳">Shade irukku 🌳</button><button class="rb" data-r="Crowd jaasthi 👥">Crowd jaasthi 👥</button>
+<ul id="rl"></ul></div></section>
+
+<section id="why" class="hide">
+<div class="card"><h2>Why heat is increasing (human activities)</h2><ul><li>Concrete, tar roads, metal sheet roofs heat-a absorb panni night-um release pannum (urban heat island)</li><li>Maram vetturadhu: shade and natural cooling illama pogudhu</li><li>AC exhaust, vehicles, burning waste extra heat serkum</li><li>Open markets and queues la shade illama makkal long exposure</li></ul></div>
+<div class="card"><h2>Impact</h2><ul><li>Heat stroke and dehydration risk kuraiyum, especially elderly, kids, vendors</li><li>Owners ku low-cost natural cooling plan (₹ and °C drop)</li><li>Community data moolama safe places identify pannalam</li></ul></div>
+<div class="card"><h2>Future scope</h2><ul><li>Live Open-Meteo forecast + SMS/WhatsApp heat alerts</li><li>Real OpenStreetMap with verified water/shade points</li><li>Tamil / Hindi voice advice for elderly</li><li>Heat-risk dashboard for municipalities</li></ul></div></section>
+<footer>Veyil Kavasam · Environmental Hacks · Heat index: NWS Rothfusz regression. Cooling estimates are approximate.</footer>
+
+<script>
+const $=i=>document.getElementById(i);
+const P={
+g:{n:"Gandhipuram Market, Coimbatore",tips:[["White lime cool-roof paint","Roof heat reflect",2.5,80],["Shade net over lanes","Direct sun block",3,60],["Khus screens + water sprinkle","Evaporative cooling",2,40],["Matka water points at gates","Hydration",.5,30]],pts:[[70,60,"s","Banyan shade"],[200,110,"w","Matka water point"],[320,70,"a","First-aid desk"],[130,190,"r","Rest bench"],[300,190,"s","Shaded lane"],[60,150,"w","Tea stall water"]]},
+m:{n:"Marudhamalai Temple",tips:[["Coir mats on walking path","Hot floor burn avoid",1.5,25],["Wet gunny / sprinkle on queue path","Evaporative cooling",2,15],["Shade pandal + tree planting","Queue shelter",3,70],["Free drinking water + ORS","Heat stroke prevention",.5,20]],pts:[[90,80,"s","Queue pandal"],[180,170,"w","Drinking water"],[310,60,"a","Medical camp"],[260,150,"r","Mandapam rest"],[60,190,"s","Peepal tree"],[340,200,"w","ORS stall"]]},
+r:{n:"RS Puram Shops",tips:[["Reflective roof coating","Indoor heat reduce",2.5,70],["Cross ventilation + exhaust fan","Hot air out",1.5,40],["Window khus / shade film","Sun block",2,35],["Potted plants at entrance","Local cooling",.7,25]],pts:[[100,70,"s","Avenue trees"],[230,120,"w","Water kiosk"],[340,190,"a","Clinic"],[60,180,"r","Cafe seating"],[200,200,"s","Covered walkway"],[310,60,"w","Metro-style fountain"]]},
+u:{n:"Ukkadam Bus Stand / Vendors",tips:[["Shade umbrella / net for vendors","Vendor protection",3,50],["Matka water kiosk","Hydration",.5,30],["Saplings along road","Long term cooling",2,60],["Mist / sprinkler at peak hours","Quick relief",2,45]],pts:[[80,90,"s","Bus shelter"],[210,60,"w","Water kiosk"],[320,130,"a","First-aid"],[150,190,"r","Waiting hall"],[290,200,"s","Tree line"],[60,200,"w","Public tap"]]}};
+const IC={s:["🌳","Shade"],w:["💧","Water"],a:["➕","First-aid"],r:["🪑","Rest"]};
+const L=[[0,"Safe","#2f9e44","Normal activity OK."],[32,"Caution","#f59f00","Konjam jaagrathai: water kudinga."],[39,"Danger","#e8590c","Long exposure avoid pannunga."],[47,"Extreme","#c92a2a","Poga vendam. Heat stroke risk."]];
+const sel=$("place");for(const k in P)sel.add(new Option(P[k].n,k));
+const lvl=v=>{let r=L[0];for(const l of L)if(v>=l[0])r=l;return r};
+function hix(c,rh){const T=c*9/5+32;if(T<80)return c;const H=-42.379+2.04901523*T+10.14333127*rh-.22475541*T*rh-.00683783*T*T-.05481717*rh*rh+.00122874*T*T*rh+.00085282*T*rh*rh-.00000199*T*T*rh*rh;return(H-32)*5/9}
+const picked=new Set(),show=new Set(["s","w","a","r"]);let reps=[];
+function peak(drop){const tmax=+$("t").value-drop,rh=+$("h").value,tmin=tmax-9,out=[];
+for(let h=6;h<=21;h++){const f=Math.max(0,Math.sin(Math.PI*(h-8)/14)),T=tmin+(tmax-tmin)*f,R=Math.min(95,Math.max(25,rh+(tmax-T)*1.8-8));out.push([h,hix(T,R)])}return out}
+const off=()=>+$("grp").value;
+function plan(){const hrs=peak(0),pk=Math.max(...hrs.map(x=>x[1])),lv=lvl(pk+off());
+$("pname").textContent=P[sel.value].n;$("hi").textContent=pk.toFixed(0);$("pill").textContent=lv[1];$("pill").style.background=lv[2];$("adv").textContent=lv[3];
+const mx=pk,mn=Math.min(...hrs.map(x=>x[1])),best=[...hrs].sort((a,b)=>a[1]-b[1]).slice(0,3).map(x=>x[0]).sort((a,b)=>a-b);
+$("bars").innerHTML=hrs.map(([h,v])=>`<div class="b ${best.includes(h)?'best':''}"><span>${v.toFixed(0)}</span><div style="height:${20+(v-mn)/(mx-mn||1)*100}px;background:${lvl(v+off())[2]}"></div></div>`).join("");
+$("hrs").innerHTML=hrs.map(([h])=>`<span>${h>12?h-12+'p':h+'a'}</span>`).join("");
+const f=h=>h>12?h-12+" PM":h+" AM";
+$("best").textContent=`✅ Best time: ${f(best[0])} – ${f(best[2]+1)}   ⚠️ Avoid: 12 PM – 4 PM`;
+const g=$("grp").selectedIndex,pre=["20 min ku oru thadava thanni kudinga, thaagam varadhuku wait pannadheenga","Cotton light-colour dress, cap / umbrella","Dizziness, vomiting, high fever: shade ku poi ORS kudinga, 108 call pannunga"];
+if(lv[1]=="Danger"||lv[1]=="Extreme")pre.unshift("Essential trip mattum; morning / evening plan pannunga");
+if(g==1)pre.push("Companion oda ponga; 12-4 PM nijamaave avoid");if(g==2)pre.push("Child-a vehicle la thaniya vidaadheenga; chappal poda sollunga");if(g==3)pre.push("Every hour 10 min shade break, ORS / buttermilk");
+if(sel.value=="m")pre.push("Hot floor: coir mat path or socks use pannunga");
+$("pre").innerHTML=pre.map(x=>`<li>${x}</li>`).join("");}
+function owners(){const p=P[sel.value];$("tips").innerHTML=p.tips.map((t,i)=>`<label class="tip"><input type="checkbox" data-i="${i}" ${picked.has(i)?'checked':''}><span>${t[0]}<br><small>${t[1]} · −${t[2]}°C · ₹${t[3]*1000}</small></span></label>`).join("");tot()}
+function tot(){const p=P[sel.value];let d=0,c=0;picked.forEach(i=>{d+=p.tips[i][2];c+=p.tips[i][3]*1000});d=Math.min(d,7);
+$("drop").textContent=d.toFixed(1);$("cost").textContent=c.toLocaleString("en-IN");
+const pk=Math.max(...peak(d).map(x=>x[1])),l=lvl(pk+off());$("npill").textContent=l[1];$("npill").style.background=l[2]}
+function mapv(){const p=P[sel.value];$("chips").innerHTML=Object.keys(IC).map(k=>`<label><input type="checkbox" data-k="${k}" ${show.has(k)?'checked':''}> ${IC[k][0]} ${IC[k][1]}</label>`).join("");
+let s='<rect x="10" y="10" width="380" height="230" rx="10" fill="none" stroke="#c9b89f" stroke-dasharray="4"/><path d="M0 125H400M200 0V250" stroke="#c9b89f" stroke-width="10" opacity=".5"/><circle cx="200" cy="125" r="9" fill="#d9480f"/><text x="212" y="145" font-size="10" fill="currentColor">YOU</text>';
+p.pts.filter(x=>show.has(x[2])).forEach(x=>{s+=`<text x="${x[0]}" y="${x[1]}" font-size="22" text-anchor="middle">${IC[x[2]][0]}</text><text x="${x[0]}" y="${x[1]+14}" font-size="9" text-anchor="middle" fill="currentColor">${x[3]}</text>`});$("svg").innerHTML=s}
+function repv(){let r=[];try{r=JSON.parse(localStorage.getItem("vk_"+sel.value)||"[]")}catch(e){}reps=r;
+$("rp").textContent=P[sel.value].n+": "+(r.length?r.length+" reports (this device)":"Innum report illa. Neenga mudhal report pannunga!");
+$("rl").innerHTML=r.slice(-5).reverse().map(x=>`<li>${x[0]} <small style="color:var(--mu)">· ${x[1]}</small></li>`).join("")}
+function all(){plan();owners();mapv();repv()}
+document.querySelectorAll(".rb").forEach(b=>b.onclick=()=>{reps.push([b.dataset.r,new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"})]);try{localStorage.setItem("vk_"+sel.value,JSON.stringify(reps))}catch(e){}repv()});
+$("tips").onchange=e=>{const i=+e.target.dataset.i;e.target.checked?picked.add(i):picked.delete(i);tot()};
+$("chips").onchange=e=>{const k=e.target.dataset.k;e.target.checked?show.add(k):show.delete(k);mapv()};
+$("tabs").onclick=e=>{const t=e.target.dataset.t;if(!t)return;document.querySelectorAll("section").forEach(s=>s.classList.toggle("hide",s.id!=t));document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b===e.target))};
+sel.onchange=()=>{picked.clear();all()};$("grp").onchange=()=>{plan();tot()};
+$("t").oninput=$("h").oninput=()=>{$("tv").textContent=$("t").value;$("hv").textContent=$("h").value;plan();tot()};
+$("tv").textContent=$("t").value;$("hv").textContent=$("h").value;all();
+</script></main></body></html>
